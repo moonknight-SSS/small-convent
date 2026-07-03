@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <title>校园跃迁</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -33,9 +33,12 @@
         </div>
       </div>
       <div class="touch-controls" aria-label="触屏控制">
-        <button class="control" data-key="left" type="button" aria-label="向左">‹</button>
-        <button class="control" data-key="right" type="button" aria-label="向右">›</button>
-        <button class="control jump" data-key="jump" type="button" aria-label="跳跃">⌃</button>
+        <div class="joystick" id="joystick" aria-label="移动摇杆" role="application">
+          <div class="joystick-base">
+            <div class="joystick-knob" id="joystickKnob"></div>
+          </div>
+        </div>
+        <button class="control jump" data-key="jump" type="button" aria-label="跳跃">跳</button>
       </div>
     </section>
   </main>
