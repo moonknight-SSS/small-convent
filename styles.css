@@ -340,24 +340,24 @@ h1 {
 
   .touch-controls {
     display: flex;
-    left: max(18px, env(safe-area-inset-bottom));
+    left: max(34px, env(safe-area-inset-bottom));
     right: max(18px, env(safe-area-inset-top));
     bottom: max(14px, env(safe-area-inset-right));
   }
 
   .joystick {
+    width: 148px;
+    height: 148px;
+  }
+
+  .joystick-base {
     width: 132px;
     height: 132px;
   }
 
-  .joystick-base {
-    width: 118px;
-    height: 118px;
-  }
-
   .joystick-knob {
-    width: 54px;
-    height: 54px;
+    width: 58px;
+    height: 58px;
   }
 
   .control.jump {
@@ -450,24 +450,24 @@ html.force-landscape .stage-wrap {
 
 html.force-landscape .touch-controls {
   display: flex;
-  left: max(18px, env(safe-area-inset-bottom));
+  left: max(34px, env(safe-area-inset-bottom));
   right: max(18px, env(safe-area-inset-top));
   bottom: max(14px, env(safe-area-inset-right));
 }
 
 html.force-landscape .joystick {
+  width: 148px;
+  height: 148px;
+}
+
+html.force-landscape .joystick-base {
   width: 132px;
   height: 132px;
 }
 
-html.force-landscape .joystick-base {
-  width: 118px;
-  height: 118px;
-}
-
 html.force-landscape .joystick-knob {
-  width: 54px;
-  height: 54px;
+  width: 58px;
+  height: 58px;
 }
 
 html.force-landscape .control.jump {
@@ -555,24 +555,24 @@ html.force-landscape .overlay-panel p {
   }
 
   .touch-controls {
-    left: max(18px, env(safe-area-inset-left));
+    left: max(34px, env(safe-area-inset-left));
     right: max(18px, env(safe-area-inset-right));
     bottom: max(14px, env(safe-area-inset-bottom));
   }
 
   .joystick {
+    width: 148px;
+    height: 148px;
+  }
+
+  .joystick-base {
     width: 132px;
     height: 132px;
   }
 
-  .joystick-base {
-    width: 118px;
-    height: 118px;
-  }
-
   .joystick-knob {
-    width: 54px;
-    height: 54px;
+    width: 58px;
+    height: 58px;
   }
 
   .control.jump {
@@ -662,24 +662,24 @@ html.force-landscape .overlay-panel p {
 
   .touch-controls {
     display: flex;
-    left: max(18px, env(safe-area-inset-left));
+    left: max(34px, env(safe-area-inset-left));
     right: max(18px, env(safe-area-inset-right));
     bottom: max(14px, env(safe-area-inset-bottom));
   }
 
   .joystick {
+    width: 148px;
+    height: 148px;
+  }
+
+  .joystick-base {
     width: 132px;
     height: 132px;
   }
 
-  .joystick-base {
-    width: 118px;
-    height: 118px;
-  }
-
   .joystick-knob {
-    width: 54px;
-    height: 54px;
+    width: 58px;
+    height: 58px;
   }
 
   .control.jump {
