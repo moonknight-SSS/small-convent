@@ -9,10 +9,11 @@ const lifeCount = document.getElementById("lifeCount");
 const timeCount = document.getElementById("timeCount");
 const joystick = document.getElementById("joystick");
 const joystickKnob = document.getElementById("joystickKnob");
+const stageWrap = document.querySelector(".stage-wrap");
 
 const playerSprite = new Image();
 playerSprite.src = "assets/player-real3d-frames.png";
-playerSprite.onload = () => render(performance.now());
+playerSprite.onload = () => scheduleLayoutSync();
 
 const keys = {
   left: false,
@@ -135,29 +136,56 @@ let timeLeft = 180;
 let levelElapsed = 0;
 let particles = [];
 let audioContext = null;
+let layoutSyncFrame = 0;
+let layoutSyncTimers = [];
 
 function resizeCanvas() {
   const ratio = window.devicePixelRatio || 1;
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = Math.max(320, Math.floor(rect.width * ratio));
-  canvas.height = Math.max(240, Math.floor(rect.height * ratio));
+  const width = canvas.clientWidth || canvas.getBoundingClientRect().width;
+  const height = canvas.clientHeight || canvas.getBoundingClientRect().height;
+  canvas.width = Math.max(320, Math.floor(width * ratio));
+  canvas.height = Math.max(240, Math.floor(height * ratio));
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 }
 
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
+function syncLayout() {
+  updateViewportMode();
+  resizeCanvas();
+  render(performance.now());
+}
+
+function scheduleLayoutSync() {
+  if (layoutSyncFrame) cancelAnimationFrame(layoutSyncFrame);
+  layoutSyncTimers.forEach(clearTimeout);
+  layoutSyncTimers = [];
+
+  syncLayout();
+  layoutSyncFrame = requestAnimationFrame(() => {
+    layoutSyncFrame = 0;
+    syncLayout();
+  });
+  layoutSyncTimers = [80, 220, 520].map((delay) => (
+    setTimeout(syncLayout, delay)
+  ));
+}
 
 function updateViewportMode() {
   const isPortrait = window.innerHeight > window.innerWidth;
   const isPhoneLike = Math.min(window.innerWidth, window.innerHeight) <= 760 || navigator.maxTouchPoints > 0;
   document.documentElement.classList.toggle("force-landscape", isPortrait && isPhoneLike);
-  requestAnimationFrame(resizeCanvas);
 }
 
-window.addEventListener("resize", updateViewportMode);
-window.addEventListener("orientationchange", updateViewportMode);
-window.visualViewport?.addEventListener("resize", updateViewportMode);
-updateViewportMode();
+window.addEventListener("resize", scheduleLayoutSync);
+window.addEventListener("orientationchange", scheduleLayoutSync);
+window.addEventListener("pageshow", scheduleLayoutSync);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) scheduleLayoutSync();
+});
+window.visualViewport?.addEventListener("resize", scheduleLayoutSync);
+if (window.ResizeObserver && stageWrap) {
+  new ResizeObserver(scheduleLayoutSync).observe(stageWrap);
+}
+scheduleLayoutSync();
 
 function getWorldScale() {
   return canvas.clientHeight / level.height;
@@ -202,10 +230,13 @@ function resetLevel(keepLives = true) {
 
 function startGame() {
   requestLandscapeFullscreen();
+  scheduleLayoutSync();
   resetLevel(false);
   state = "playing";
   overlay.classList.add("hidden");
   playTone(440, 0.08, "square", 0.05);
+  setTimeout(scheduleLayoutSync, 180);
+  setTimeout(scheduleLayoutSync, 620);
 }
 
 function requestLandscapeFullscreen() {
@@ -214,11 +245,11 @@ function requestLandscapeFullscreen() {
 
   const root = document.documentElement;
   if (!document.fullscreenElement && root.requestFullscreen) {
-    root.requestFullscreen().catch(() => {});
+    root.requestFullscreen().then(scheduleLayoutSync).catch(() => {});
   }
 
   if (screen.orientation?.lock) {
-    screen.orientation.lock("landscape").catch(() => {});
+    screen.orientation.lock("landscape").then(scheduleLayoutSync).catch(() => {});
   }
 }
 
