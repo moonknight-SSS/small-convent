@@ -228,12 +228,16 @@ function resetLevel(keepLives = true) {
   updateHud();
 }
 
-function startGame() {
-  requestLandscapeFullscreen();
-  scheduleLayoutSync();
+function startGame(event) {
+  event?.preventDefault?.();
+  event?.stopPropagation?.();
+  if (state === "playing") return;
+
   resetLevel(false);
   state = "playing";
   overlay.classList.add("hidden");
+  scheduleLayoutSync();
+  requestLandscapeFullscreen();
   playTone(440, 0.08, "square", 0.05);
   setTimeout(scheduleLayoutSync, 180);
   setTimeout(scheduleLayoutSync, 620);
@@ -244,13 +248,22 @@ function requestLandscapeFullscreen() {
   if (!isSmallScreen) return;
 
   const root = document.documentElement;
-  if (!document.fullscreenElement && root.requestFullscreen) {
-    root.requestFullscreen().then(scheduleLayoutSync).catch(() => {});
-  }
+  try {
+    if (!document.fullscreenElement && root.requestFullscreen) {
+      Promise.resolve(root.requestFullscreen()).then(scheduleLayoutSync).catch(() => {});
+    }
 
-  if (screen.orientation?.lock) {
-    screen.orientation.lock("landscape").then(scheduleLayoutSync).catch(() => {});
+    if (screen.orientation?.lock) {
+      Promise.resolve(screen.orientation.lock("landscape")).then(scheduleLayoutSync).catch(() => {});
+    }
+  } catch {
+    scheduleLayoutSync();
   }
+}
+
+function startFromOverlay(event) {
+  if (overlay.classList.contains("hidden")) return;
+  startGame(event);
 }
 
 function showOverlay(title, text, button) {
@@ -1188,7 +1201,11 @@ for (const button of document.querySelectorAll(".control")) {
   button.addEventListener("pointerleave", () => set(false));
 }
 
-startButton.addEventListener("click", startGame);
+for (const eventName of ["pointerdown", "touchstart", "mousedown", "click"]) {
+  document.addEventListener(eventName, startFromOverlay, { capture: true, passive: false });
+  overlay.addEventListener(eventName, startFromOverlay, { passive: false });
+  startButton.addEventListener(eventName, startGame, { passive: false });
+}
 
 if (!CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function roundRect(x, y, w, h, r) {
