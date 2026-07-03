@@ -189,10 +189,25 @@ function resetLevel(keepLives = true) {
 }
 
 function startGame() {
+  requestLandscapeFullscreen();
   resetLevel(false);
   state = "playing";
   overlay.classList.add("hidden");
   playTone(440, 0.08, "square", 0.05);
+}
+
+function requestLandscapeFullscreen() {
+  const isSmallScreen = Math.min(window.innerWidth, window.innerHeight) < 760;
+  if (!isSmallScreen) return;
+
+  const root = document.documentElement;
+  if (!document.fullscreenElement && root.requestFullscreen) {
+    root.requestFullscreen().catch(() => {});
+  }
+
+  if (screen.orientation?.lock) {
+    screen.orientation.lock("landscape").catch(() => {});
+  }
 }
 
 function showOverlay(title, text, button) {
@@ -442,7 +457,7 @@ function updateGame(dt) {
     state = "win";
     player.coins += Math.max(0, Math.ceil(timeLeft / 5));
     updateHud();
-    showOverlay("通关成功", `最终金币：${player.coins}。这位戴眼镜耳机的主角已经抵达终点！`, "再玩一次");
+    showOverlay("通关成功", `最终金币：${player.coins}。李小儿已经抵达终点！`, "再玩一次");
     playTone(660, 0.12, "triangle", 0.04);
     setTimeout(() => playTone(880, 0.14, "triangle", 0.04), 120);
   }
