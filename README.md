@@ -1,2 +1,2 @@
 # small-convent
-attempt to make a game
+做小游戏
