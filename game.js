@@ -147,6 +147,18 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
+function updateViewportMode() {
+  const isPortrait = window.innerHeight > window.innerWidth;
+  const isPhoneLike = Math.min(window.innerWidth, window.innerHeight) <= 760 || navigator.maxTouchPoints > 0;
+  document.documentElement.classList.toggle("force-landscape", isPortrait && isPhoneLike);
+  requestAnimationFrame(resizeCanvas);
+}
+
+window.addEventListener("resize", updateViewportMode);
+window.addEventListener("orientationchange", updateViewportMode);
+window.visualViewport?.addEventListener("resize", updateViewportMode);
+updateViewportMode();
+
 function getWorldScale() {
   return canvas.clientHeight / level.height;
 }
@@ -1087,7 +1099,7 @@ window.addEventListener("keyup", (event) => {
 
 if (joystick && joystickKnob) {
   let joystickPointer = null;
-  const joystickRadius = 42;
+  const joystickRadius = 52;
 
   const setJoystick = (event) => {
     const rect = joystick.getBoundingClientRect();
