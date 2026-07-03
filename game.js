@@ -147,6 +147,10 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
+function getWorldScale() {
+  return canvas.clientHeight / level.height;
+}
+
 function rectsOverlap(a, b) {
   return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
@@ -431,8 +435,8 @@ function updateGame(dt) {
   timeLeft = 180 - levelElapsed;
   if (timeLeft <= 0) damagePlayer();
 
-  const viewW = canvas.clientWidth;
-  cameraX = Math.max(0, Math.min(level.width - viewW, player.x - viewW * 0.42));
+  const viewWorldW = canvas.clientWidth / getWorldScale();
+  cameraX = Math.max(0, Math.min(level.width - viewWorldW, player.x - viewWorldW * 0.42));
 
   if (player.x + player.w >= level.flagX) {
     state = "win";
@@ -505,8 +509,9 @@ function drawBackground(viewW, viewH) {
 }
 
 function drawDecorations(time) {
+  const viewWorldW = canvas.clientWidth / getWorldScale();
   for (const item of level.decorations) {
-    if (item.x + (item.w || 180) < cameraX - 120 || item.x > cameraX + canvas.clientWidth + 180) continue;
+    if (item.x + (item.w || 180) < cameraX - 120 || item.x > cameraX + viewWorldW + 180) continue;
     if (item.type === "building") drawBuilding(item);
     if (item.type === "tree") drawTree(item.x, item.y, item.scale || 1, time);
     if (item.type === "lamp") drawLamp(item.x, item.y);
@@ -1023,9 +1028,11 @@ function drawParticles() {
 function render(time = 0) {
   const viewW = canvas.clientWidth;
   const viewH = canvas.clientHeight;
+  const scale = getWorldScale();
   drawBackground(viewW, viewH);
 
   ctx.save();
+  ctx.scale(scale, scale);
   ctx.translate(-cameraX, 0);
   drawDecorations(time);
   for (const solid of level.solids) drawSolid(solid);
