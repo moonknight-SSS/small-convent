@@ -1167,8 +1167,11 @@ if (joystick && joystickKnob) {
     const rect = joystick.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
-    const dx = event.clientX - cx;
-    const dy = event.clientY - cy;
+    const rawDx = event.clientX - cx;
+    const rawDy = event.clientY - cy;
+    const isForcedLandscape = document.documentElement.classList.contains("force-landscape");
+    const dx = isForcedLandscape ? rawDy : rawDx;
+    const dy = isForcedLandscape ? -rawDx : rawDy;
     const distance = Math.hypot(dx, dy);
     const clamped = Math.min(joystickRadius, distance);
     const angle = Math.atan2(dy, dx);
