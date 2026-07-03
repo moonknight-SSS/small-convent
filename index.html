@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>校园跃迁</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="game-shell" aria-label="校园跃迁横板闯关小游戏">
+    <section class="topbar" aria-label="游戏状态">
+      <div class="brand">
+        <span class="mark" aria-hidden="true"></span>
+        <div>
+          <h1>校园跃迁</h1>
+          <p>横板闯关</p>
+        </div>
+      </div>
+      <div class="stats" aria-live="polite">
+        <span>金币 <strong id="coinCount">0</strong></span>
+        <span>生命 <strong id="lifeCount">3</strong></span>
+        <span>时间 <strong id="timeCount">180</strong></span>
+      </div>
+    </section>
+
+    <section class="stage-wrap">
+      <canvas id="gameCanvas" width="960" height="540"></canvas>
+      <div id="overlay" class="overlay">
+        <div class="overlay-panel">
+          <h2 id="overlayTitle">校园跃迁</h2>
+          <p id="overlayText">按 Enter 开始，方向键或 A/D 移动，空格/W/上方向跳跃。</p>
+          <button id="startButton" type="button">开始游戏</button>
+        </div>
+      </div>
+      <div class="touch-controls" aria-label="触屏控制">
+        <button class="control" data-key="left" type="button" aria-label="向左">‹</button>
+        <button class="control" data-key="right" type="button" aria-label="向右">›</button>
+        <button class="control jump" data-key="jump" type="button" aria-label="跳跃">⌃</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
