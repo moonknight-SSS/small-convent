@@ -1130,7 +1130,7 @@ window.addEventListener("keyup", (event) => {
 
 if (joystick && joystickKnob) {
   let joystickPointer = null;
-  const joystickRadius = 52;
+  const joystickRadius = 64;
 
   const setJoystick = (event) => {
     const rect = joystick.getBoundingClientRect();
