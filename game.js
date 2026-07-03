@@ -11,7 +11,7 @@ const joystick = document.getElementById("joystick");
 const joystickKnob = document.getElementById("joystickKnob");
 
 const playerSprite = new Image();
-playerSprite.src = "local-assets/player-real3d-frames.png";
+playerSprite.src = "assets/player-real3d-frames.png";
 playerSprite.onload = () => render(performance.now());
 
 const keys = {
