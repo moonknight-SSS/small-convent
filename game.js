@@ -169,10 +169,15 @@ function scheduleLayoutSync() {
   ));
 }
 
+function isPhoneLikeViewport() {
+  return Math.min(window.innerWidth, window.innerHeight) <= 760
+    || navigator.maxTouchPoints > 0
+    || "ontouchstart" in window;
+}
+
 function updateViewportMode() {
   const isPortrait = window.innerHeight > window.innerWidth;
-  const isPhoneLike = Math.min(window.innerWidth, window.innerHeight) <= 760 || navigator.maxTouchPoints > 0;
-  document.documentElement.classList.toggle("force-landscape", isPortrait && isPhoneLike);
+  document.documentElement.classList.toggle("force-landscape", isPortrait && isPhoneLikeViewport());
 }
 
 window.addEventListener("resize", scheduleLayoutSync);
@@ -181,7 +186,9 @@ window.addEventListener("pageshow", scheduleLayoutSync);
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) scheduleLayoutSync();
 });
-window.visualViewport?.addEventListener("resize", scheduleLayoutSync);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", scheduleLayoutSync);
+}
 if (window.ResizeObserver && stageWrap) {
   new ResizeObserver(scheduleLayoutSync).observe(stageWrap);
 }
@@ -229,8 +236,10 @@ function resetLevel(keepLives = true) {
 }
 
 function startGame(event) {
-  event?.preventDefault?.();
-  event?.stopPropagation?.();
+  if (event) {
+    if (event.preventDefault) event.preventDefault();
+    if (event.stopPropagation) event.stopPropagation();
+  }
   if (state === "playing") return;
 
   resetLevel(false);
@@ -250,13 +259,13 @@ function requestLandscapeFullscreen() {
   const root = document.documentElement;
   try {
     if (!document.fullscreenElement && root.requestFullscreen) {
-      Promise.resolve(root.requestFullscreen()).then(scheduleLayoutSync).catch(() => {});
+      Promise.resolve(root.requestFullscreen()).then(scheduleLayoutSync).catch(function () {});
     }
 
-    if (screen.orientation?.lock) {
-      Promise.resolve(screen.orientation.lock("landscape")).then(scheduleLayoutSync).catch(() => {});
+    if (screen.orientation && screen.orientation.lock) {
+      Promise.resolve(screen.orientation.lock("landscape")).then(scheduleLayoutSync).catch(function () {});
     }
-  } catch {
+  } catch (error) {
     scheduleLayoutSync();
   }
 }
@@ -264,6 +273,15 @@ function requestLandscapeFullscreen() {
 function startFromOverlay(event) {
   if (overlay.classList.contains("hidden")) return;
   startGame(event);
+}
+
+function autoStartOnMobile() {
+  if (!isPhoneLikeViewport()) return;
+  window.setTimeout(function () {
+    if (state === "ready" && !overlay.classList.contains("hidden")) {
+      startGame();
+    }
+  }, 900);
 }
 
 function showOverlay(title, text, button) {
@@ -281,7 +299,7 @@ function updateHud() {
 
 function playTone(freq, duration, type = "sine", volume = 0.04) {
   try {
-    audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gain = audioContext.createGain();
     oscillator.type = type;
@@ -292,7 +310,7 @@ function playTone(freq, duration, type = "sine", volume = 0.04) {
     oscillator.start();
     gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
     oscillator.stop(audioContext.currentTime + duration);
-  } catch {
+  } catch (error) {
     audioContext = null;
   }
 }
@@ -1226,4 +1244,5 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 
 resetLevel(false);
 render();
+autoStartOnMobile();
 requestAnimationFrame(loop);
